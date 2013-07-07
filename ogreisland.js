@@ -40,8 +40,8 @@ var server = net.createServer(function (socket) {
 	var client = net.createConnection({port: 5301, host:'stage.ogreisland.com'}, function() { //'connect' listener
 		console.log('client connected');
 		var getShellStatus = setTimeout(function(){
-			socket.write("<p c='3'><m p='2' p0='SV' p1='_root.me.speed' p2='100'/><m p='2' p0='SV' p1='_root.map._xscale' p2='500'/><m p='2' p0='SV' p1='_root.map._yscale' p2='500'/></p>");
-			console.log('setting speed and zoom');
+			socket.write("<p c='1'><m p='2' p0='SV' p1='_root.me.speed' p2='100'/></p>");
+			console.log('setting speed at 100');
 		}, 10000);
 	});
 	client.on('data', function(data) {
