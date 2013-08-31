@@ -4,11 +4,15 @@ Ogre Island Super Client NJS is an Ogre Island Super Client (OISC) clone built i
 
 ## Current implementations
 
-* Increased character speed
+* Increased character speed - /speed <val>
+* Variable zoom - /zoom [50-200]
+* Access bank anywhere - /bank
+* Open windows - /oisc open <window>
+* Set flash variables via /oisc set <var> <value>
 
 ## Future implementations
 
-* Increased zoom
+* Increased zoom (It seems there are checks against this, may not implement)
 * Automatic retaliation
 * Automatic looting
 * Sell anywhere

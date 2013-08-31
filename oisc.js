@@ -117,6 +117,10 @@ function parseGameClientPacket(packet) {
 					oisc.socket.write("<p c='2'><m p='2' p0='SV' p1='_root.me.speed' p2='"+parseSay[1]+"'/><m p='3' p0='SAY' p1='OISC' p2='Setting me.speed to " + parseSay[1] + "' p3=''/></p>");
 					return true;
 					break;
+				case "/bank":
+					oisc.socket.write("<p c='1'><m p='1' p0='OPENWINDOW' p1='bank'/></p>");
+					return true;
+					break;
 				case "/vendor":
 					oisc.client.write("CLICKPLAYER" + '\x01' + "9295809e-a7e5-46bf-b077-418ddc4e12b7" + '\u0000');
 					oisc.client.write("SAY" + '\x01' + "///VENDORSELLBUTTON" + '\u0000');
