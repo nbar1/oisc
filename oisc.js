@@ -1,10 +1,17 @@
 /**
  * OISC MITM
- * Modify your local machine host files to point stage.ogreisland.com to your server
+ * Modify your local machine host files to point www.ogreisland.com to your server address
  */
+
+console.log('OISC running...');
+
+// Load the packet parser
+var parser_outbound = require('./mod_parser_outbound');
+var parser_inbound = require('./mod_parser_inbound');
 
 // Load the TCP Library
 net = require('net');
+http = require('http');
 
 // Set colors for console output
 var red, blue, reset;
@@ -13,127 +20,128 @@ blue = '\033[34m';
 reset = '\033[0m';
 
 // Map oisc to global
-GLOBAL.oisc = GLOBAL;
+oisc = {};
 
-// Build clients list
-var clients = [];
+/**
+ * Create server for game client to connect to
+ */
+net.createServer(function(socket) {
+	// Map the socket to global
+	oisc.server = socket;
 
-// Create OISC Server
-// Accepts incoming connections from game client
-oisc.server = net.createServer(function (socket) {
-	// Scope to global
-	oisc.socket = socket;
-	// Set name
-	oisc.socket.name = oisc.socket.remoteAddress + ':' + oisc.socket.remotePort;
-	// Set keepalive
-	oisc.socket.setKeepAlive(true, 120000);
-	// Put game client in the clients list
-	clients.push(oisc.socket);
+	// Alert of established connection
+	console.log('OISC server connection from game client established');
 
-	console.log('OISC Server ' + oisc.socket.remotePort + ' initiated: ' + oisc.socket.name + '\n');
-	// Start OISC Client
+	// Start a client to connect to OI server
+	if(oisc.client === undefined || oisc.client.writeable !== true) startClient();
 
-	// Handle incoming messages from game client
-	oisc.socket.on('data', function (data) {
-		parsedData = parseGameClientPacket(data);
-		if(oisc.client == undefined && parsedData != false) setupClient();
-		if(parsedData !== false && parsedData !== true) {
-			console.log('Game client sending: ' + parsedData);
-			// Write data to OISC Client
-			oisc.client.write(data);
-		} else {
-			console.log('OISC Server tossing: ' + data);
-		}
+	/**
+	 * Receive data from game client
+	 */
+	oisc.server.on('data', function(data) {
+		console.log(red + 'SERVER RECEIVED: ' + reset + blue + data + reset);
+		parser_outbound.parsePacket(data, function(send, receiver, packet) {
+			if(send !== false) {
+				if(receiver === 'client') {
+					console.log('sending to gameclient: ' + packet);
+					oisc.server.write(packet);
+				}
+				else if(receiver === 'server') {
+					console.log('sending to gameserver: ' + packet);
+					oisc.client.write(packet);
+				}
+			}
+			else {
+				console.log('not sending: '+data);
+			}
+		});
 	});
-	// Handle errors
-	oisc.socket.on('error', function (error) {
-		console.log('OISC Server ' + oisc.socket.remotePort + ' Error: '+error.stack);
+
+	/**
+	 * Error on OISC server
+	 */
+	oisc.server.on('error', function (error) {
+		console.log(red + 'SERVER ERROR: ' + reset);
+		console.log(error.stack);
 	});
-	// Remove the client from the list when it leaves
-	oisc.socket.on('end', function () {
-		clients.splice(clients.indexOf(oisc.socket), 1);
-		console.log('OISC Server ' + oisc.socket.remotePort + ': ' + oisc.socket.name + ' GAME CLIENT DISCONNECT.\n');
+
+	/**
+	 * Game client disconnect
+	 */
+	oisc.server.on('end', function() {
+		console.log(red + 'SERVER CONNECTION ENDED' + reset);
+		oisc.client.destroy();
 	});
-	// Pipe commands 
-	oisc.socket.pipe(oisc.socket);
+	
 }).listen(5301);
 
 
-// Set up OISC Client
-// Connects to OI server
-function setupClient() {
-	oisc.client = net.createConnection({port: 5301, host:'stage.ogreisland.com'}, function() { //'connect' listener
-		console.log('OISC Client initiated: connected to stage.ogreisland.com:5301');
+
+
+/**
+ * Create client to connect to OI server
+ */
+function startClient() {
+	/**
+	 * Open connection to OI server
+	 */
+	oisc.client = net.createConnection({port: 5301, host:'www.ogreisland.com'}, function() {
+		console.log(red + 'CLIENT: ' + reset + blue + 'Connected to www.ogreisland.com:5301' + reset);
 	});
+
+	/**
+	 * Receive data from OI server
+	 */
 	oisc.client.on('data', function(data) {
-		console.log(red + 'OISC Client recieved from OI: ' + reset + blue + data + reset);
-		oisc.socket.write(data);
+		console.log(red + 'CLIENT RECEIVED: ' + reset + blue + data + reset);
+		parser_inbound.parsePacket(data, function(send, receiver, packet) {
+			
+		});
+		oisc.server.write(data);
 	});
-	oisc.client.on('end', function() {
-		console.log(red + 'OISC Client: SERVER DISCONNECT' + reset);
-		oisc.socket.destroy();
-	});
+
+	/**
+	 * Error on OISC client
+	 */
 	oisc.client.on('error', function(error) {
 		console.log('OISC Client Error: ' + error.stack);
 	});
+
+	/**
+	 * OI Server disconnect
+	 */
+	oisc.client.on('end', function() {
+		console.log(red + 'CLIENT CONNECTION ENDED' + reset);
+	});
 }
 
-// Handle parsing for packets sent out by game client
-function parseGameClientPacket(packet) {
-	console.log('parsing: '+packet);
-	parsePacket = packet.toString().replace('\u0000', '').split('\x01');
-	switch(parsePacket[0])
-	{
-		case '<policy-file-request/>':
-			return false;
-			break;
 
-		case 'SAY':
-			parseSay = parsePacket[1].split(' ');
-			switch(parseSay[0]) {
-				case "/oisc":
-					switch(parseSay[1])
-					{
-						case "set":
-							oisc.socket.write("<p c='2'><m p='2' p0='SV' p1='_root."+parseSay[2]+"' p2='"+parseSay[3]+"'/><m p='3' p0='SAY' p1='OISC' p2='Setting " + parseSay[2] + " to " + parseSay[3] + "' p3=''/></p>");
-							return true;
-						break;
-	
-						case "get":
-							oisc.socket.write("<p c='1'><m p='3' p0='SAY' p1='OISC' p2='Getting " + parseSay[2] + "' p3=''/></p>");
-							return true
-						break;
-						
-						case "open":
-							oisc.socket.write("<p c='1'><m p='1' p0='OPENWINDOW' p1='" + parseSay[2] + "'/></p>");
-							return true;
-					}
-					break;
-				case "/zoom":
-					oisc.socket.write("<p c='3'><m p='2' p0='SV' p1='_root.map._xscale' p2='"+parseSay[1]+"'/><m p='2' p0='SV' p1='_root.map._yscale' p2='"+parseSay[1]+"'/><m p='3' p0='SAY' p1='OISC' p2='Zooming to " + parseSay[1] + "' p3=''/></p>");
-					return true;
-					break;
-				case "/speed":
-					oisc.socket.write("<p c='2'><m p='2' p0='SV' p1='_root.me.speed' p2='"+parseSay[1]+"'/><m p='3' p0='SAY' p1='OISC' p2='Setting me.speed to " + parseSay[1] + "' p3=''/></p>");
-					return true;
-					break;
-				case "/bank":
-					oisc.socket.write("<p c='1'><m p='1' p0='OPENWINDOW' p1='bank'/></p>");
-					return true;
-					break;
-				case "/vendor":
-					oisc.client.write("CLICKPLAYER" + '\x01' + "9295809e-a7e5-46bf-b077-418ddc4e12b7" + '\u0000');
-					oisc.client.write("SAY" + '\x01' + "///VENDORSELLBUTTON" + '\u0000');
-					return true;
-			}
-			break;
 
-		case 'GV':
-			if(parsePacket[1] == "_root.me.speed") {
-				console.log('sending false speed');
-				return "GV" + '\x01' + "_root.me.speed" + '\x01' + "15" + '\x01' + "GV" + '\x01' + "_root.map._xscale" + '\x01' + "50" + '\u0000';
-			}
-			break;
-	}
-	return packet;
-}
+
+
+/**
+ * Proxy for port 80
+ *
+ * We need this because as of 12/2013 the game server hits
+ * www.ogreisland.com instead of stage.ogreisland.com, so our
+ * hostfile entry would kill the OI website without proxy.
+ */
+http.createServer(function(request, response) {
+	var proxy = http.createClient(80, request.headers['host']);
+	var proxy_request = proxy.request(request.method, request.url, request.headers);
+	proxy_request.addListener('response', function(proxy_response) {
+		proxy_response.addListener('data', function(chunk) {
+			response.write(chunk, 'binary');
+		});
+		proxy_response.addListener('end', function() {
+			response.end();
+		});
+		response.writeHead(proxy_response.statusCode, proxy_response.headers);
+	});
+	request.addListener('data', function(chunk) {
+		proxy_request.write(chunk, 'binary');
+	});
+	request.addListener('end', function() {
+		proxy_request.end();
+	});
+}).listen(80);
