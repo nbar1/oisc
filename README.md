@@ -24,7 +24,7 @@ Ogre Island Super Client is a proxy for Ogre Island that allows for increased fu
 
 ## Using OISC NJS
 
-* Run `sudo node ogreisland.js` on your local machine or server
+* Run `sudo node oisc.js` on your local machine or server
 * Launch Ogre Island
 * When you're done, make sure you stop the node.js server!
 
