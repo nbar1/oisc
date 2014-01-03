@@ -1,12 +1,12 @@
-# Ogre Island Super Client NJS
+# Ogre Island Super Client
 
-Ogre Island Super Client NJS is an Ogre Island Super Client (OISC) clone built in node.js
+Ogre Island Super Client is a proxy for Ogre Island that allows for increased functionality.
+
 
 ## Current implementations
 
 * Increased character speed - /speed <val>
 * Access bank anywhere - /bank
-* Open windows - /oisc open <window>
 * Set flash variables via /oisc set <var> <value>
 * Automatically loots any coins
 
@@ -27,3 +27,6 @@ Ogre Island Super Client NJS is an Ogre Island Super Client (OISC) clone built i
 * Run `sudo node ogreisland.js` on your local machine or server
 * Launch Ogre Island
 * When you're done, make sure you stop the node.js server!
+
+## Important Information
+Use of this application is against the terms and conditations of your Ogre Island account. There is a good chance, if found out that you're using it, your account will be banned. I am in no way responsible for anything that may happen to you, your character or your account should you decide to use this application.

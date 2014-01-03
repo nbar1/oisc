@@ -29,6 +29,10 @@ module.exports = {
 	
 							case "open":
 								callback(true, 'client', "<p c='1'><m p='1' p0='OPENWINDOW' p1='" + parseSay[2] + "'/></p>");
+
+							case "config":
+								oisc.config[parseSay[2]] = !oisc.config[parseSay[2]];
+								callback(true, 'client', "<p c='1'><m p='3' p0='SAY' p1='@' p2='config." + parseSay[2] + " is now " + oisc.config[parseSay[2]] + "' p3=''/></p>");
 						}
 						break;
 					case "/speed":

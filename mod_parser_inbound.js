@@ -63,17 +63,28 @@ module.exports = {
 	 * limited to coins right now
 	 */
 	checkLoot: function(packet, zones) {
+		self = this;
 		// split loot individually
 		var loot = zones[2].split(';');
 		loot.pop();
 		loot.forEach(function(item) {
 			item_id = item.split(',');
 			item_id = item_id[0];
-			if(item.indexOf('Coins') != -1) {
-				oisc.client.write("CLICKBAGITEM" + '\x01' + zones[1] + '\x01' + item_id + '\u0000');
-				oisc.client.write("SAY" + '\x01' + "///CLICKBAG[!]bag[!]10[!]10" + '\u0000');
+			if(oisc.config.loot_all == true) {
+				self.grabLoot(item_id);
+			}
+			else if(oisc.config.loot_coins == true && item.indexOf('Coins') != -1) {
+				self.grabLoot(item_id);
 			}
 		});
 		return packet;
+	},
+
+	/**
+	 * Grab loot
+	 */
+	grabLoot: function(item_id) {
+		oisc.client.write("CLICKBAGITEM" + '\x01' + "loot" + '\x01' + item_id + '\u0000');
+		oisc.client.write("SAY" + '\x01' + "///CLICKBAG[!]bag[!]10[!]10" + '\u0000');
 	}
 }

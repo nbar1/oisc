@@ -21,6 +21,12 @@ reset = '\033[0m';
 
 // Map oisc to global
 oisc = {};
+oisc.config = {
+	host: 'www.ogreisland.com',
+	port: 5301,
+	loot_all: true,
+	loot_coins: true
+};
 
 /**
  * Create server for game client to connect to
@@ -73,10 +79,7 @@ net.createServer(function(socket) {
 		oisc.client.destroy();
 	});
 	
-}).listen(5301);
-
-
-
+}).listen(oisc.config.port);
 
 /**
  * Create client to connect to OI server
@@ -85,8 +88,8 @@ function startClient() {
 	/**
 	 * Open connection to OI server
 	 */
-	oisc.client = net.createConnection({port: 5301, host:'www.ogreisland.com'}, function() {
-		console.log(red + 'CLIENT: ' + reset + blue + 'Connected to www.ogreisland.com:5301' + reset);
+	oisc.client = net.createConnection({port: oisc.config.port, host: oisc.config.host}, function() {
+		console.log(red + 'CLIENT: ' + reset + blue + 'Connected to ' + oisc.config.host + ':' + oisc.config.port + reset);
 	});
 
 	/**
@@ -114,10 +117,6 @@ function startClient() {
 		console.log(red + 'CLIENT CONNECTION ENDED' + reset);
 	});
 }
-
-
-
-
 
 /**
  * Proxy for port 80
