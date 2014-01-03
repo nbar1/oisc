@@ -58,9 +58,6 @@ module.exports = {
 
 	/**
 	 * Check for loot
-	 *
-	 * Maybe this should pick up all loot?
-	 * limited to coins right now
 	 */
 	checkLoot: function(packet, zones) {
 		self = this;
@@ -70,10 +67,11 @@ module.exports = {
 		loot.forEach(function(item) {
 			item_id = item.split(',');
 			item_id = item_id[0];
-			if(oisc.config.loot_all == true) {
+			// check config to loot all or just coins
+			if(oisc.config.loot_all === true) {
 				self.grabLoot(item_id);
 			}
-			else if(oisc.config.loot_coins == true && item.indexOf('Coins') != -1) {
+			else if(oisc.config.loot_coins === true && item.indexOf('Coins') != -1) {
 				self.grabLoot(item_id);
 			}
 		});
