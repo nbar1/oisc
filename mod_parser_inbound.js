@@ -51,8 +51,24 @@ module.exports = {
 					return this.checkLoot(packet, zones);
 				}
 				break;
+			case 'SETCOOLDOWN':
+				// Check cooldown for autocast
+				if(oisc.params.autocast && oisc.config.autocast_active && zones[1] == oisc.params.autocast_spell && zones[2] == '0') {
+					// Cooldown complete
+					oisc.client.write("SAY" + '\x01' + "/do " + oisc.params.autocast_spell + '\u0000');
+				}
+				return packet;
+				break;
+			case 'SAY':
+				// Check auto cast
+				if(oisc.config.autocast_active && zones[1] == '**' && zones[2].indexOf('You have slain') != -1) {
+					oisc.config.autocast_active = false;
+				}
+				return packet;
+				break;
 			default:
 				return packet;
+				break;
 		}
 	},
 
@@ -68,10 +84,10 @@ module.exports = {
 			item_id = item.split(',');
 			item_id = item_id[0];
 			// check config to loot all or just coins
-			if(oisc.config.loot_all === true) {
+			if(oisc.params.loot_all === true) {
 				self.grabLoot(item_id);
 			}
-			else if(oisc.config.loot_coins === true && item.indexOf('Coins') != -1) {
+			else if(oisc.params.loot_coins === true && item.indexOf('Coins') != -1) {
 				self.grabLoot(item_id);
 			}
 		});

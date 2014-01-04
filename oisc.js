@@ -24,6 +24,11 @@ oisc = {};
 oisc.config = {
 	host: 'www.ogreisland.com',
 	port: 5301,
+	autocast_active: false
+};
+oisc.params = {
+	autocast: true,
+	autocast_spell: 'csWizardFireIgnite',
 	loot_all: true,
 	loot_coins: true
 };
@@ -58,7 +63,7 @@ net.createServer(function(socket) {
 				}
 			}
 			else {
-				console.log('not sending: '+data);
+				console.log('not sending: ' + data);
 			}
 		});
 	});
@@ -97,10 +102,10 @@ function startClient() {
 	 */
 	oisc.client.on('data', function(data) {
 		console.log(red + 'CLIENT RECEIVED: ' + reset + blue + data + reset);
+		oisc.server.write(data);
 		parser_inbound.parsePacket(data, function(send, receiver, packet) {
 			
 		});
-		oisc.server.write(data);
 	});
 
 	/**

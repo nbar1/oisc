@@ -5,10 +5,11 @@ Ogre Island Super Client is a proxy for Ogre Island that allows for increased fu
 
 ## Current implementations
 
-* Increased character speed - /speed <val>
+* Increased character speed - /speed *value*
 * Access bank anywhere - /bank
-* Set flash variables via /oisc set <var> <value>
-* Automatically loots any items, or just coins (/oisc config [loot_all, loot_coins])
+* Set flash variables - /oisc set *variable* *value*
+* Automatically loots any items, or just coins - /oisc param [loot_all, loot_coins]
+* Automatically cast after first cast of specified spell - /oisc param autocast, /oisc param autocast_spell csWizardFireIgnite
 
 ## Future implementations
 
