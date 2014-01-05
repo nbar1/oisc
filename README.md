@@ -15,7 +15,7 @@ Ogre Island Super Client is a proxy for Ogre Island that allows for increased fu
 
 * Sell anywhere
 * Automining
-*
+* Autolumberjack
 
 ## Installation
 

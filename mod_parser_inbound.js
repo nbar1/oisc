@@ -7,6 +7,9 @@
 module.exports = {
 	/**
 	 * Parse full packet
+	 *
+	 * @param packet Full packet being examined
+	 * @param callback
 	 */
 	parsePacket: function(packet, callback) {
 		var self = this;
@@ -21,8 +24,12 @@ module.exports = {
 			callback(true, 'client', self.executePacket(packet, zones));
 		});
 	},
+
 	/**
 	 * Break up large packet into individual packets
+	 *
+	 * @param packet Full packet being examined
+	 * @returns array Individual packets
 	 */
 	getAllPackets: function(packet) {
 		return packet.toString().match(/<m (.+?)\/>/g);
@@ -30,6 +37,8 @@ module.exports = {
 
 	/**
 	 * Break up single packet into individual zones
+	 * @param packet Individual packet being examined
+	 * @returns array Packet zones
 	 */
 	getPacketZones: function(packet) {
 		var stripped_zones = [];
@@ -43,6 +52,10 @@ module.exports = {
 
 	/**
 	 * Execute packet
+	 *
+	 * @param packet Individual packet being examined
+	 * @param zones Packet zones
+	 * @returns string Individual packet
 	 */
 	executePacket: function(packet, zones) {
 		switch(zones[0]) {
@@ -77,6 +90,10 @@ module.exports = {
 
 	/**
 	 * Check for loot
+	 *
+	 * @param packet Individual packet being examined
+	 * @param zones Packet zones
+	 * @returns string Individual packet
 	 */
 	checkLoot: function(packet, zones) {
 		self = this;
@@ -99,6 +116,8 @@ module.exports = {
 
 	/**
 	 * Grab loot
+	 *
+	 * @param item_id ID of item to grab
 	 */
 	grabLoot: function(item_id) {
 		oisc.client.write("CLICKBAGITEM" + '\x01' + "loot" + '\x01' + item_id + '\u0000');
