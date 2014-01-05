@@ -53,9 +53,12 @@ module.exports = {
 				break;
 			case 'SETCOOLDOWN':
 				// Check cooldown for autocast
-				if(oisc.params.autocast && oisc.config.autocast_active && zones[1] == oisc.params.autocast_spell && zones[2] == '0') {
-					// Cooldown complete
-					oisc.client.write("SAY" + '\x01' + "/do " + oisc.params.autocast_spell + '\u0000');
+				if(oisc.params.autocast && oisc.config.autocast_active && zones[1] == oisc.params.autocast_spell && zones[2] == '1') {
+					// Cooldown at 1 second, start timeout for cast
+					var autocastCooldownDelay = setTimeout(function(){
+						oisc.client.write("SAY" + '\x01' + "/do " + oisc.params.autocast_spell + '\u0000');
+						delete autocastCooldownDelay;
+					}, oisc.params.autocast_delay);
 				}
 				return packet;
 				break;

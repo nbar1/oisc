@@ -51,12 +51,34 @@ module.exports = {
 						callback(true, 'client', "<p c='1'><m p='1' p0='OPENWINDOW' p1='bank'/></p>");
 						break;
 
+					case "/autocast":
+						if(oisc.params.autocast == true) {
+							oisc.params.autocast = false;
+							oisc.params.autocast_set = false;
+							callback(true, 'client', "<p c='1'><m p='2' p0='SAY' p1='*' p2='Autocast disabled'/></p>");
+						}
+						else {
+							oisc.params.autocast = true;
+							oisc.params.autocast_set = true;
+							callback(true, 'client', "<p c='1'><m p='2' p0='SAY' p1='*' p2='Select spell to autocast'/></p>");
+						}
+						break;
+
 					case "/do":
-						if(oisc.params.autocast && !oisc.config.autocast_active && parseSay[1].toLowerCase() == oisc.params.autocast_spell.toLowerCase()) {
+						if(oisc.params.autocast_set) {
+							oisc.params.autocast_spell = parseSay[1];
+							oisc.params.autocast_set = false;
+							callback(true, 'client', "<p c='1'><m p='2' p0='SAY' p1='*' p2='Autocast set to " + parseSay[1] + "'/></p>");
+							
+						}
+						else if(oisc.params.autocast && !oisc.config.autocast_active && parseSay[1].toLowerCase() == oisc.params.autocast_spell.toLowerCase()) {
 							// Casted the autocast spell, start autocast
 							oisc.config.autocast_active = true;
+							callback(true, 'server', packet);
 						}
-						callback(true, 'server', packet);
+						else {
+							callback(true, 'server', packet);
+						}
 						break;
 
 					case "/cmd":

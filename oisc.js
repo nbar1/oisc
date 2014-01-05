@@ -27,8 +27,9 @@ oisc.config = {
 	autocast_active: false
 };
 oisc.params = {
-	autocast: true,
-	autocast_spell: 'csWizardFireIgnite',
+	autocast: false,
+	autocast_spell: '',
+	autocast_delay: 800,
 	loot_all: true,
 	loot_coins: true
 };
