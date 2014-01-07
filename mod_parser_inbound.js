@@ -80,6 +80,10 @@ module.exports = {
 				if(oisc.config.autocast_active && zones[1] == '**' && zones[2].indexOf('You have slain') != -1) {
 					oisc.config.autocast_active = false;
 				}
+				/*
+				else if(oisc.config.speed != '' && zones[2].indexOf('too much weight')) { // Check for weight overload
+					oisc.server.write("<p c='1'><m p='2' p0='SV' p1='_root.me.speed' p2='" + oisc.config.speed + "'/></p>");
+				}*/
 				return packet;
 				break;
 			default:

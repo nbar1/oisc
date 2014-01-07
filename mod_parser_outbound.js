@@ -45,6 +45,7 @@ module.exports = {
 
 					case "/speed":
 						callback(true, 'client', "<p c='2'><m p='2' p0='SV' p1='_root.me.speed' p2='"+parseSay[1]+"'/><m p='3' p0='SAY' p1='OISC' p2='Setting me.speed to " + parseSay[1] + "' p3=''/></p>");
+						oisc.config.speed = parseSay[1];
 						break;
 
 					case "/bank":
