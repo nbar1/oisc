@@ -60,7 +60,7 @@ module.exports = {
 	executePacket: function(packet, zones) {
 		switch(zones[0]) {
 			case 'ADDTOBAG':
-				if(zones[1] == 'loot') {
+				if(zones[1] == 'loot2') {
 					return this.checkLoot(packet, zones);
 				}
 				break;
@@ -125,6 +125,5 @@ module.exports = {
 	 */
 	grabLoot: function(item_id) {
 		oisc.client.write("CLICKBAGITEM" + '\x01' + "loot" + '\x01' + item_id + '\u0000');
-		oisc.client.write("SAY" + '\x01' + "///CLICKBAG[!]bag[!]10[!]10" + '\u0000');
 	}
 }
