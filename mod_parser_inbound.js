@@ -80,10 +80,9 @@ module.exports = {
 				if(oisc.config.autocast_active && zones[1] == '**' && zones[2].indexOf('You have slain') != -1) {
 					oisc.config.autocast_active = false;
 				}
-				/*
-				else if(oisc.config.speed != '' && zones[2].indexOf('too much weight')) { // Check for weight overload
-					oisc.server.write("<p c='1'><m p='2' p0='SV' p1='_root.me.speed' p2='" + oisc.config.speed + "'/></p>");
-				}*/
+				else if(oisc.config.speed != '' && zones[2].indexOf('too much weight') != -1) { // Check for weight overload
+					var setSpeedBack = setTimeout(function() { oisc.server.write("<p c='1'><m p='2' p0='SV' p1='_root.me.speed' p2='" + oisc.config.speed + "'/></p>"); }, 500);
+				}
 				return packet;
 				break;
 			default:
@@ -105,14 +104,28 @@ module.exports = {
 		var loot = zones[2].split(';');
 		loot.pop();
 		loot.forEach(function(item) {
-			item_id = item.split(',');
-			item_id = item_id[0];
-			// check config to loot all or just coins
-			if(oisc.params.loot_all === true) {
+			item = item.split(',');
+			item_id = item[0];
+			item_specs = item[item.length-1].split(' - ');
+			item_name = item_specs[0].trim();
+
+			if(oisc.params.loot_coins == true && item_name.indexOf('Coins') != -1) {
+				// grab coins
 				self.grabLoot(item_id);
 			}
-			else if(oisc.params.loot_coins === true && item.indexOf('Coins') != -1) {
-				self.grabLoot(item_id);
+			else if(oisc.params.loot_all === true) {
+				// check value of item, grab if over loot_value
+				if(item_specs.length < 3) {
+					item_quality = 'none';
+					item_value = item_specs[1].replace(/[^\d.]/g, "");
+				}
+				else {
+					item_quality = item_specs[1].replace("quality: ", "");
+					item_value = item_specs[2].replace(/[^\d.]/g, "");
+				}
+				if(item_value >= oisc.params.loot_value) {
+					self.grabLoot(item_id);
+				}
 			}
 		});
 		return packet;

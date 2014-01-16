@@ -9,6 +9,7 @@ Ogre Island Super Client is a proxy for Ogre Island that allows for increased fu
 * Increased character speed - /speed *value*
 * Access bank anywhere - /bank
 * Automatically loots any items, or just coins - /oisc param [loot_all, loot_coins]
+* Maintain set speed while over weight limit - /speed *value*
 * Set flash variables - /oisc set *variable* *value*
 
 ## Future implementations

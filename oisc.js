@@ -32,7 +32,8 @@ oisc.params = {
 	autocast_spell: '',
 	autocast_delay: 800,
 	loot_all: true,
-	loot_coins: true
+	loot_coins: true,
+	loot_value: 2
 };
 
 /**
