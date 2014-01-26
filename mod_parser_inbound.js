@@ -75,13 +75,20 @@ module.exports = {
 				}
 				return packet;
 				break;
+			case 'SETACTION':
+				if(zones[2] == 'SPEED') {
+					// Speed changed on server
+					var server_speed = zones[3];
+					oisc.config.speed_server = server_speed;
+					if(oisc.config.speed != 0) {
+						var setSpeedBack = setTimeout(function() { oisc.server.write("<p c='1'><m p='2' p0='SV' p1='_root.me.speed' p2='" + oisc.config.speed + "'/></p>"); }, 500);
+					}
+				}
+				break;
 			case 'SAY':
 				// Check auto cast
 				if(oisc.config.autocast_active && zones[1] == '**' && zones[2].indexOf('You have slain') != -1) {
 					oisc.config.autocast_active = false;
-				}
-				else if(oisc.config.speed != '' && zones[2].indexOf('too much weight') != -1) { // Check for weight overload
-					var setSpeedBack = setTimeout(function() { oisc.server.write("<p c='1'><m p='2' p0='SV' p1='_root.me.speed' p2='" + oisc.config.speed + "'/></p>"); }, 500);
 				}
 				return packet;
 				break;

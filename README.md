@@ -2,6 +2,9 @@
 
 Ogre Island Super Client is a proxy for Ogre Island that allows for increased functionality.
 
+## Latest Changes
+* Removed /bank command since the bank is now in html5
+** No plans to reinstate command, as I believe it requires vendor vicinity
 
 ## Current implementations
 

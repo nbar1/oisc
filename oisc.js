@@ -25,7 +25,8 @@ oisc.config = {
 	host: 'www.ogreisland.com',
 	port: 5301,
 	autocast_active: false,
-	speed: 15
+	speed: 0,
+	speed_server: 16,
 };
 oisc.params = {
 	autocast: false,

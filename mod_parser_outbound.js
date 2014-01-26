@@ -44,12 +44,8 @@ module.exports = {
 						break;
 
 					case "/speed":
-						callback(true, 'client', "<p c='2'><m p='2' p0='SV' p1='_root.me.speed' p2='"+parseSay[1]+"'/><m p='3' p0='SAY' p1='OISC' p2='Setting me.speed to " + parseSay[1] + "' p3=''/></p>");
+						callback(true, 'client', "<p c='2'><m p='2' p0='SV' p1='_root.me.speed' p2='"+parseSay[1]+"'/><m p='3' p0='SAY' p1='OISC' p2='Speed is now " + parseSay[1] + "' p3=''/></p>");
 						oisc.config.speed = parseSay[1];
-						break;
-
-					case "/bank":
-						callback(true, 'client', "<p c='1'><m p='1' p0='OPENWINDOW' p1='bank'/></p>");
 						break;
 
 					case "/autocast":
@@ -96,7 +92,7 @@ module.exports = {
 
 			case 'GV':
 				if(parsePacket[1] == "_root.me.speed") {
-					callback(true, 'server', "GV" + '\x01' + "_root.me.speed" + '\x01' + "15" + '\x01' + "GV" + '\x01' + "_root.map._xscale" + '\x01' + "50" + '\u0000');
+					callback(true, 'server', "GV" + '\x01' + "_root.me.speed" + '\x01' + oisc.config.speed_server + '\u0000');
 				}
 				break;
 
