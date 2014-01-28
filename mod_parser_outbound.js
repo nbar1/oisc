@@ -48,6 +48,10 @@ module.exports = {
 						oisc.config.speed = parseSay[1];
 						break;
 
+					case "/coords":
+						callback(true, 'client', "<p c='1'><m p='3' p0='SAY' p1='OISC' p2='Coords: " + oisc.coords.x + " " + oisc.coords.y + " " + oisc.coords.z + " " + oisc.coords.obj + "' p3=''/></p>");
+						break;
+
 					case "/autocast":
 						if(oisc.params.autocast == true) {
 							oisc.params.autocast = false;
@@ -58,6 +62,18 @@ module.exports = {
 							oisc.params.autocast = true;
 							oisc.params.autocast_set = true;
 							callback(true, 'client', "<p c='1'><m p='2' p0='SAY' p1='*' p2='Select spell to autocast'/></p>");
+						}
+						break;
+
+					case "/automine":
+						if(oisc.params.automine == true) {
+							oisc.params.automine = false;
+							callback(true, 'client', "<p c='1'><m p='2' p0='SAY' p1='*' p2='Autominer disabled'/></p>");
+						}
+						else {
+							oisc.params.automine = true;
+							callback(true, 'client', "<p c='1'><m p='2' p0='SAY' p1='*' p2='Autominer enabled'/></p>");
+							autominer.createNewRock();
 						}
 						break;
 
@@ -79,7 +95,7 @@ module.exports = {
 						break;
 
 					case "/cmd":
-						parseSay.splice(0);
+						parseSay.splice(0,1);
 						var command = parseSay.join(' ').split('|').join('\x01');
 						callback(true, 'server', command);
 						break;
@@ -95,7 +111,12 @@ module.exports = {
 					callback(true, 'server', "GV" + '\x01' + "_root.me.speed" + '\x01' + oisc.config.speed_server + '\u0000');
 				}
 				break;
-
+			case 'MOVE':
+				oisc.coords.x = parsePacket[1];
+				oisc.coords.y = parsePacket[2];
+				oisc.coords.obj = parsePacket[3];
+				callback(true, 'server', packet);
+				break;
 			default:
 				callback(true, 'server', packet);
 				break;

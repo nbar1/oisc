@@ -8,6 +8,7 @@ console.log('OISC running...');
 // Load the packet parser
 var parser_outbound = require('./mod_parser_outbound');
 var parser_inbound = require('./mod_parser_inbound');
+autominer = require('./mod_autominer');
 
 // Load the TCP Library
 net = require('net');
@@ -26,15 +27,22 @@ oisc.config = {
 	port: 5301,
 	autocast_active: false,
 	speed: 0,
-	speed_server: 16,
+	speed_server: 0,
 };
 oisc.params = {
 	autocast: false,
 	autocast_spell: '',
 	autocast_delay: 800,
+	automine: false,
 	loot_all: true,
 	loot_coins: true,
 	loot_value: 2
+};
+oisc.coords = {
+	x: 0,
+	y: 0,
+	z: 0,
+	obj: 0
 };
 
 /**
@@ -43,6 +51,7 @@ oisc.params = {
 net.createServer(function(socket) {
 	// Map the socket to global
 	oisc.server = socket;
+	oisc.server.setNoDelay(true);
 
 	// Alert of established connection
 	console.log('OISC server connection from game client established');

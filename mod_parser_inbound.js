@@ -37,6 +37,7 @@ module.exports = {
 
 	/**
 	 * Break up single packet into individual zones
+	 *
 	 * @param packet Individual packet being examined
 	 * @returns array Packet zones
 	 */
@@ -64,6 +65,14 @@ module.exports = {
 					return this.checkLoot(packet, zones);
 				}
 				break;
+			case 'ADDOBJ':
+				// Check for iron rock
+				if(zones[2] == "Iron Rock" && autominer.isEnabled()) {
+					autominer.selectRock(zones[1]);
+					autominer.mineRock(zones[1]);
+				}
+				return packet;
+				break;
 			case 'SETCOOLDOWN':
 				// Check cooldown for autocast
 				if(oisc.params.autocast && oisc.config.autocast_active && zones[1] == oisc.params.autocast_spell && zones[2] == '1') {
@@ -72,6 +81,11 @@ module.exports = {
 						oisc.client.write("SAY" + '\x01' + "/do " + oisc.params.autocast_spell + '\u0000');
 						delete autocastCooldownDelay;
 					}, oisc.params.autocast_delay);
+				}
+				// Check cooldown for precious metals
+				if(oisc.params.automine && zones[1] == "csPreciousMetals" && zones[2] == '0') {
+					// Ready to create another rock
+					autominer.createNewRock();
 				}
 				return packet;
 				break;
@@ -89,6 +103,11 @@ module.exports = {
 				// Check auto cast
 				if(oisc.config.autocast_active && zones[1] == '**' && zones[2].indexOf('You have slain') != -1) {
 					oisc.config.autocast_active = false;
+				}
+				// Check autominer
+				if(oisc.params.automine && zones[1] == '**' && zones[2].indexOf('you dig up') != -1) {
+					// Metal aquired, move to next area
+					autominer.moveToNextMineArea();
 				}
 				return packet;
 				break;

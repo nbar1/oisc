@@ -4,11 +4,12 @@ Ogre Island Super Client is a proxy for Ogre Island that allows for increased fu
 
 ## Latest Changes
 * Removed /bank command since the bank is now in html5
-** No plans to reinstate command, as I believe it requires vendor vicinity
+..* No plans to reinstate command, as I believe it requires vendor vicinity
 
 ## Current implementations
 
 * Automatically cast after first cast of specified spell - /autocast
+* Automatically mine iron ore - /automine (partial implementation)
 * Increased character speed - /speed *value*
 * Access bank anywhere - /bank
 * Automatically loots any items, or just coins - /oisc param [loot_all, loot_coins]
