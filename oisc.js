@@ -13,6 +13,7 @@ autominer = require('./mod_autominer');
 // Load the TCP Library
 net = require('net');
 http = require('http');
+fs = require('fs');
 
 // Set colors for console output
 var red, blue, reset;
@@ -22,6 +23,7 @@ reset = '\033[0m';
 
 // Map oisc to global
 oisc = {};
+oisc.resources = {};
 oisc.config = {
 	host: 'www.ogreisland.com',
 	port: 5301,
@@ -96,7 +98,7 @@ net.createServer(function(socket) {
 		console.log(red + 'SERVER CONNECTION ENDED' + reset);
 		oisc.client.destroy();
 	});
-	
+
 }).listen(oisc.config.port);
 
 /**
@@ -117,7 +119,7 @@ function startClient() {
 		console.log(red + 'CLIENT RECEIVED: ' + reset + blue + data + reset);
 		oisc.server.write(data);
 		parser_inbound.parsePacket(data, function(send, receiver, packet) {
-			
+
 		});
 	});
 
@@ -142,17 +144,28 @@ function startClient() {
  * We need this because as of 12/2013 the game server hits
  * www.ogreisland.com instead of stage.ogreisland.com, so our
  * hostfile entry would kill the OI website without proxy.
+ * This method also injects css and js from appserv/
  */
 http.createServer(function(request, response) {
 	var proxy = http.createClient(80, request.headers['host']);
 	var proxy_request = proxy.request(request.method, request.url, request.headers);
 	proxy_request.addListener('response', function(proxy_response) {
 		proxy_response.addListener('data', function(chunk) {
+			if(request.url == "/game2/client.aspx") {
+				var newChunk = chunk.toString().replace(/(<\/head>)/, '<style>' + oisc.resources.css + '</style><script type="text/javascript">' + oisc.resources.js + '</script>$1');
+				chunk = new Buffer(newChunk.toString('binary'), 'binary');
+				/*
+				chunkSize = Buffer.byteLength(newChunk.toString('binary'), 'binary');
+				proxy_response.headers['content-length'] = chunkSize;
+			*/
+			}
 			response.write(chunk, 'binary');
 		});
 		proxy_response.addListener('end', function() {
 			response.end();
 		});
+		delete proxy_response.headers['content-length'];
+		console.log(proxy_response.headers);
 		response.writeHead(proxy_response.statusCode, proxy_response.headers);
 	});
 	request.addListener('data', function(chunk) {
@@ -162,3 +175,17 @@ http.createServer(function(request, response) {
 		proxy_request.end();
 	});
 }).listen(80);
+
+/**
+ * Load resources for injection into DOM
+ */
+fs.readFile("appserv/oisc.css", function(err, data) {
+	if(err) { throw err; }
+	oisc.resources.css = data;
+	console.log('Loaded CSS');
+});
+fs.readFile("appserv/oisc.js", function(err, data) {
+	if(err) { throw err; }
+	oisc.resources.js = data;
+	console.log('Loaded JS');
+});

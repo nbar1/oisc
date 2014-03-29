@@ -1,0 +1,36 @@
+/**
+ * Game GUI Enhancements
+ */
+/* Status bars */
+.statusbar {
+	background: #b8b8b8;
+	background-image: none !important;
+	border-radius: 5px;
+	height: 12px;
+	overflow: hidden;
+	top: -16px !important;
+}
+.statusbar > .statusvalue {
+	background-image: none !important;
+	height: 12px;
+	line-height: 14px;
+}
+#healthbar .statusvalue {
+	background: #03af07;
+}
+#statsbar .statusvalue {
+	background: #597ae4;
+}
+
+
+
+
+/**
+ * UIX
+ */
+#gamediv {
+	width: 1000px;
+}
+#gamediv > #client > embed {
+	width: 1000px;
+}

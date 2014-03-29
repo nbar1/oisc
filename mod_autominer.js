@@ -5,13 +5,6 @@
  */
 module.exports = {
 	/**
-	 * targetRock: Current rock to mine
-	 * canMine: Cooldown has completed
-	 */
-	targetRock: null,
-	canMine: true,
-
-	/**
 	 * Checks if autominer is enabled
 	 *
 	 * @returns bool
