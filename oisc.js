@@ -152,12 +152,14 @@ http.createServer(function(request, response) {
 	proxy_request.addListener('response', function(proxy_response) {
 		proxy_response.addListener('data', function(chunk) {
 			if(request.url == "/game2/client.aspx") {
+				// include styles and js for game
 				var newChunk = chunk.toString().replace(/(<\/head>)/, '<style>' + oisc.resources.css + '</style><script type="text/javascript">' + oisc.resources.js + '</script>$1');
 				chunk = new Buffer(newChunk.toString('binary'), 'binary');
-				/*
-				chunkSize = Buffer.byteLength(newChunk.toString('binary'), 'binary');
-				proxy_response.headers['content-length'] = chunkSize;
-			*/
+			}
+			else if(proxy_response.headers['content-type'].indexOf("text/html") > -1) {
+				// add OISC banner
+				var newChunk = chunk.toString().replace(/(<body>)/, '$1<div id="oisc_banner" style="position:fixed;background:#00c;z-index:99;display:block;width:100%;padding:2px;text-align:center">OISC Loaded</div>');
+				chunk = new Buffer(newChunk.toString('binary'), 'binary');
 			}
 			response.write(chunk, 'binary');
 		});
@@ -165,7 +167,6 @@ http.createServer(function(request, response) {
 			response.end();
 		});
 		delete proxy_response.headers['content-length'];
-		console.log(proxy_response.headers);
 		response.writeHead(proxy_response.statusCode, proxy_response.headers);
 	});
 	request.addListener('data', function(chunk) {
